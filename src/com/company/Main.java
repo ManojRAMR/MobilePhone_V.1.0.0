@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Main{
     private static Scanner scanner = new Scanner(System.in);
-    private static MobilePhone myContact = new MobilePhone();
+    private static MobilePhone myContact = new MobilePhone("0715190114");
 
     public static void main(String[] args){
         boolean quit = false;
@@ -59,7 +59,7 @@ public class Main{
 
     public static void printContacts(){
         System.out.println("Mobile contacts");
-        myContact.printContactList();
+        myContact.printContacts();
 
     }
 
@@ -71,7 +71,7 @@ public class Main{
         System.out.print("New contact number: ");
         String number = scanner.nextLine();
 
-        myContact.addContact(new Contacts(name, number));
+        myContact.addNewContact(new Contact(name, number));
     }
 
     public static void modifyContact(){
@@ -84,8 +84,9 @@ public class Main{
         String newName = scanner.nextLine();
         System.out.print("New contact number: ");
         String number = scanner.nextLine();
+        Contact existingContact = myContact.queryContact(oldName);
 
-        myContact.modifyContact(oldName, new Contacts(newName, number));
+        myContact.updateContact(existingContact, new Contact(newName, number));
     }
 
     public static void removeContact(){
@@ -93,16 +94,18 @@ public class Main{
 
         System.out.print("Contact name: ");
         String name = scanner.nextLine();
+        Contact existingContact = myContact.queryContact(name);
 
-        myContact.removeContact(name);
+        myContact.removeContact(existingContact);
     }
 
     public static void searchContact(){
-        System.out.println("Fina a contact");
+        System.out.println("Find a contact");
 
         System.out.print("Contact name: ");
         String name = scanner.nextLine();
 
-        myContact.findContact(name);
+        Contact contact = myContact.queryContact(name);
+        System.out.println(contact.getName()+" -> "+contact.getPhoneNumber());
     }
 }

@@ -3,72 +3,72 @@ package com.company;
 import java.util.ArrayList;
 
 public class MobilePhone{
-    private ArrayList<Contacts> myContacts = new ArrayList<>();
+    private String myNumber;
+    private ArrayList<Contact> myContacts;
 
-    public void addContact(Contacts newContact){
-        String newContactName = newContact.getName();
-        boolean exist = false;
-        for (Contacts myContact : myContacts){
-            if (myContact.getName().equals(newContactName)) {
-                exist = true;
-                break;
-            }
-        }
+    public MobilePhone(String myNumber){
+        this.myContacts = new ArrayList<>();
+        this.myNumber = myNumber;
+    }
 
-        if (!exist) {
+    public boolean addNewContact(Contact newContact){
+        int newContactId = findContact(newContact);
+
+        if (newContactId < 0) {
             myContacts.add(newContact);
-            System.out.println("Added new contact into contact list");
+            return true;
         } else {
-            System.out.println("Contact is already in the list.");
+            return false;
         }
     }
 
-    public void modifyContact(String name, Contacts newContact){
-        boolean exist = false;
-        int indexOfExistingContact = 0;
-        for (Contacts myContact : myContacts){
-            if (myContact.getName().equals(name)) {
-                exist = true;
-                indexOfExistingContact = myContacts.indexOf(myContact);
-                break;
-            }
-        }
-
-        if (exist) {
-            myContacts.get(indexOfExistingContact).setNumber(newContact.getNumber());
-            myContacts.get(indexOfExistingContact).setName(newContact.getName());
-            System.out.println("Contact was modified");
+    public boolean updateContact(Contact existingContact, Contact newContact){
+        int indexOfExistingContact = findContact(existingContact);
+        if (indexOfExistingContact >= 0) {
+            myContacts.remove(indexOfExistingContact);
+            Contact newContactToCreate = Contact.createContact(newContact.getName(), newContact.getPhoneNumber());
+            myContacts.add(newContactToCreate);
+            return true;
         } else {
-            System.out.println("Contact is not in the list.");
-            addContact(newContact);
+            return false;
         }
 
     }
 
-    public void removeContact(String name){
-        boolean exist = false;
-        int indexOfContact = 0;
-        for (Contacts myContact : myContacts){
-            if (myContact.getName().equals(name)) {
-                exist = true;
-                indexOfContact = myContacts.indexOf(myContact);
-                break;
-            }
+    public boolean removeContact(Contact contact){
+        int findContactIndex = findContact(contact);
+        if (findContactIndex >= 0) {
+            myContacts.remove(findContactIndex);
+            return true;
+        } else {
+            return false;
         }
 
-        if (exist) {
-            myContacts.remove(indexOfContact);
-            System.out.println("Contact was removed.");
-        } else {
-            System.out.println("Contact is not in the list.");
-        }
     }
 
-    public Contacts findContact(String name){
+    private int findContact(Contact contactToFind){
         boolean contactExist = false;
         int indexOfExistingContact = -1;
+        String contactToFindName = contactToFind.getName();
+        for (Contact contact : myContacts){
+            if (contact.getName().equals(contactToFindName)) {
+                contactExist = true;
+                indexOfExistingContact = myContacts.indexOf(contact);
+                break;
+            }
+        }
+        if (contactExist) {
+            Contact contact = myContacts.get(indexOfExistingContact);
+            return indexOfExistingContact;
+        } else {
+            return -1;
+        }
+    }
 
-        for (Contacts contact : myContacts){
+    private int findContact(String name){
+        boolean contactExist = false;
+        int indexOfExistingContact = -1;
+        for (Contact contact : myContacts){
             if (contact.getName().equals(name)) {
                 contactExist = true;
                 indexOfExistingContact = myContacts.indexOf(contact);
@@ -76,24 +76,26 @@ public class MobilePhone{
             }
         }
         if (contactExist) {
-            Contacts contact = myContacts.get(indexOfExistingContact);
-            System.out.println("Contact exists.");
-            System.out.println("Name: " + contact.getName() + " Number: " + contact.getNumber());
-            return myContacts.get(indexOfExistingContact);
+            Contact contact = myContacts.get(indexOfExistingContact);
+            return indexOfExistingContact;
         } else {
-            System.out.println("Queried name is not in the contact list.");
+            return -1;
+        }
+    }
+
+    public Contact queryContact(String name){
+        int findContactReturn = findContact(name);
+        if (findContactReturn >= 0) {
+            return myContacts.get(findContactReturn);
+        } else {
             return null;
         }
     }
 
-
-    public void printContactList(){
-        if (myContacts.size() > 0) {
-            for (Contacts contact : myContacts){
-                System.out.println("Name: " + contact.getName() + " Number: " + contact.getNumber());
-            }
-        } else {
-            System.out.println("No contacts.");
+    public void printContacts(){
+        System.out.println("Contact List:");
+        for (Contact contact : myContacts){
+            System.out.println((myContacts.indexOf(contact) + 1) + ". " + contact.getName() + " -> " + contact.getPhoneNumber());
         }
     }
 
